@@ -7,12 +7,19 @@ const router = Router();
 
 router.post(
   "/registration",
+  body("mobilePhone").isMobilePhone("any"),
   body("email").isEmail(),
   body("password").isLength({ min: 6, max: 64 }),
   userController.registration
 );
 
-router.post("/login", userController.login);
+router.post(
+  "/login",
+  body("mobilePhone").isMobilePhone("any"),
+  body("email").isEmail(),
+  body("password").isLength({ min: 6, max: 64 }),
+  userController.login
+);
 
 router.post("/logout", userController.logout);
 

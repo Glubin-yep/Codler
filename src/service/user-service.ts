@@ -8,17 +8,17 @@ import  UserDTO  from '../dtos/user-dtos';
 import ApiError from '../exceptions/api-error';
 
 class UserService {
-  async registration(email: string, password: string): Promise<{ user: UserDTO, accessToken: string, refreshToken: string }> {
-    const candidate = await User.findOne({ email });
+  async registration(mobilePhone: string, email: string, password: string): Promise<{ user: UserDTO, accessToken: string, refreshToken: string }> {
+    const candidate = await User.findOne({ mobilePhone });
 
     if (candidate) {
-      throw ApiError.BadRequest(`Користувач з електроною почтою ${email} вже існує`);
+      throw ApiError.BadRequest(`A user with the following mobile number ${mobilePhone} already exists`);
     }
 
     const hashPassword = await bcrypt.hash(password, 3);
     const activationLink = uuidv4();
 
-    const user = await User.create({ email, password: hashPassword, activationLink });
+    const user = await User.create({mobilePhone, email, password: hashPassword, activationLink });
     //await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
     const userDto = new UserDTO(user);
@@ -45,11 +45,11 @@ class UserService {
     await user.save();
   }
 
-  async login(email: string, password: string): Promise<{ user: UserDTO, accessToken: string, refreshToken: string }> {
-    const user = await User.findOne({ email });
+  async login(mobilePhone: string, password: string): Promise<{ user: UserDTO, accessToken: string, refreshToken: string }> {
+    const user = await User.findOne({ mobilePhone });
 
     if (!user) {
-      throw ApiError.BadRequest('User with this email does not exist');
+      throw ApiError.BadRequest('User with this mobile number does not exist');
     }
 
     const isPassEquals = await bcrypt.compare(password, user.password);
