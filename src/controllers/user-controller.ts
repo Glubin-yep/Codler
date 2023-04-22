@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-//import { validationResult } from "express-validator";
+import { validationResult } from "express-validator";
 import ApiError from "../exceptions/api-error";
 import UserService from "../service/user-service";
 
 class UserController {
   async registration(req: Request, res: Response, next: NextFunction) {
     try {
-      //const errors = validationResult(req);
-      //if (!errors.isEmpty()) {
-      //  return next(ApiError.BadRequest("Помилка при валідації", errors.array()));
-      // }
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          ApiError.BadRequest("Validation error", errors.array())
+        );
+      }
 
       const { email, password } = req.body;
       const userData = await UserService.registration(email, password);
@@ -61,12 +63,8 @@ class UserController {
     try {
       const activationLink = req.params.link;
       await UserService.activate(activationLink);
-      
-      if (!process.env.CLIENT_URL) {
-        throw new Error("CLIENT_URL environment variable is not defined");
-      }
 
-      return res.redirect(process.env.CLIENT_URL);
+      return res.redirect(process.env.CLIENT_URL!);
     } catch (e) {
       next(e);
     }

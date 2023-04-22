@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import router from './router/router';
-//import errorMiddleware from './middlewares/error-middleware';
+import errorMiddleware from './middlewares/error-middleware';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -15,8 +15,9 @@ app.use(cors({
   credentials: true,
   origin: process.env.CLIENT_URL
 }));
+
 app.use('/api', router);
-//app.use(errorMiddleware);
+app.use(errorMiddleware);
 
 const start = async() => {
   try{

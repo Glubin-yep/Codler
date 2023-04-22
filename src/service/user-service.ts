@@ -38,7 +38,7 @@ class UserService {
     const user = await User.findOne({ activationLink });
 
     if (!user) {
-      throw ApiError.BadRequest('Некоректна силка активації');
+      throw ApiError.BadRequest('Incorrect activation link');
     }
 
     user.isActivated = true;
@@ -49,13 +49,13 @@ class UserService {
     const user = await User.findOne({ email });
 
     if (!user) {
-      throw ApiError.BadRequest('Користувача з таким email не існує');
+      throw ApiError.BadRequest('User with this email does not exist');
     }
 
     const isPassEquals = await bcrypt.compare(password, user.password);
 
     if (!isPassEquals) {
-      throw ApiError.BadRequest('Невірний пароль');
+      throw ApiError.BadRequest('Invalid password');
     }
 
     const userDto = new UserDTO(user);
